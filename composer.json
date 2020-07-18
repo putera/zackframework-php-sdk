@@ -4,7 +4,7 @@
     "keywords": ["zackframework", "sdk", "api"],
     "type": "library",
     "homepage": "https://github.com/putera/zackframework-php-sdk",
-    "license": "ZackFramework Platform",
+    "license": "MIT",
     "authors": [
         {
             "name": "Zulkifli Mohamed",
