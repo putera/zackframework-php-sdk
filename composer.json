@@ -1,0 +1,25 @@
+{
+    "name": "zackframework/php-sdk",
+    "description": "ZackFramework API Wrapper for PHP",
+    "keywords": ["zackframework", "sdk", "api"],
+    "type": "library",
+    "homepage": "https://github.com/putera/zackframework-php-sdk",
+    "license": "ZackFramework Platform",
+    "authors": [
+        {
+            "name": "Zulkifli Mohamed",
+            "homepage": "https://www.zulmd.com"
+        }
+    ],
+    "require": {
+        "php": "^5.4|^7.0"
+    },
+    "require-dev": {
+        "guzzlehttp/guzzle": "~7.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Zackframework\\": "src/"
+        }
+    }
+}
