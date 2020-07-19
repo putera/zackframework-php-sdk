@@ -7,5 +7,5 @@ This repository contains the open source PHP SDK that allows you to access the Z
 The ZackFramework PHP SDK can be installed with [Composer](https://getcomposer.org/). Run this command:
 
 ```sh
-composer require putera/php-zapi
+composer require zackframework/php-sdk
 ```
