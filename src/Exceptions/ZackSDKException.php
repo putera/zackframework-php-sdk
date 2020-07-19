@@ -15,10 +15,10 @@
 namespace Zackframework\Exceptions;
 
 /**
- * Class ZackframeworkSDKException
+ * Class ZackSDKException
  *
  * @package Zackframework
  */
-class ZackframeworkSDKException extends \Exception
+class ZackSDKException extends \Exception
 {
 }

@@ -17,7 +17,9 @@ namespace Zackframework;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
-use Zackframework\Exceptions\ZackframeworkSDKException;
+use GuzzleHttp\Psr7\Response;
+
+use Zackframework\Exceptions\ZackSDKException;
 
 class Zackframework
 {
@@ -44,20 +46,20 @@ class Zackframework
         ], $config);
 
         if (!$config['api_key']) {
-            throw new ZackframeworkSDKException('Required "api_key" key not supplied in config and could not find fallback environment variable "' . static::API_KEY_ENV_NAME . '"');
+            throw new ZackSDKException('Required "api_key" key not supplied in config and could not find fallback environment variable "' . static::API_KEY_ENV_NAME . '"');
         }
         if (!$config['api_secret']) {
-            throw new ZackframeworkSDKException('Required "api_secret" key not supplied in config and could not find fallback environment variable "' . static::API_SECRET_ENV_NAME . '"');
+            throw new ZackSDKException('Required "api_secret" key not supplied in config and could not find fallback environment variable "' . static::API_SECRET_ENV_NAME . '"');
         }
         if (!$config['api_url']) {
-            throw new ZackframeworkSDKException('Required "api_url" key not supplied in config and could not find fallback environment variable "' . static::API_URL_ENV_NAME . '"');
+            throw new ZackSDKException('Required "api_url" key not supplied in config and could not find fallback environment variable "' . static::API_URL_ENV_NAME . '"');
         }
 
         if (!is_string($config['api_key']) || strlen($config['api_key']) != 32) {
-            throw new ZackframeworkSDKException('The "api_key" must be formatted as a string and must be 32 characters long.');
+            throw new ZackSDKException('The "api_key" must be formatted as a string and must be 32 characters long.');
         }
         if (!is_string($config['api_secret']) || strlen($config['api_secret']) != 16) {
-            throw new ZackframeworkSDKException('The "api_secret" must be formatted as a string and must be 16 characters long.');
+            throw new ZackSDKException('The "api_secret" must be formatted as a string and must be 16 characters long.');
         }
 
         $this->api_key = (string) $config['api_key'];
@@ -66,7 +68,9 @@ class Zackframework
         $this->defaultApiVersion = $config['api_version'];
         $this->accessToken = $this->api_key . ':' . $this->api_secret;
 
-        $this->client = new Client();
+        $this->client = new Client([
+            'verify' => false
+        ]);
     }
 
 
@@ -81,6 +85,9 @@ class Zackframework
     }
     public function getClient() {
         return $this->client;
+    }
+    public function getVersion() {
+        return static::SDK_VERSION;
     }
     public function getApiVersion() {
         return $this->defaultApiVersion;
@@ -101,10 +108,31 @@ class Zackframework
     public function sendRequest($method, $endpoint, array $params = [], $apiVersion = null) {
         $apiVersion = $apiVersion ?: $this->defaultApiVersion;
         
-        $url = $this->getApiUrl() . $endpoint;
-        $headers = array('Authorization' => 'Bearer ' . $this->accessToken);
+        // Setting API Url
+        $url = $this->getApiUrl() . rtrim($endpoint, '/');
+        
+        // Setting up headers
+        $headers = [
+            'Authorization' => 'Bearer ' . $this->accessToken,
+            'User-Agent'    => 'Zackframework API Wrapper/'.$this->getVersion(),
+            'Accept'        => 'application/json'
+        ];
 
-        //$response = $this->client->get($url, array(‘headers’ => $header));
-        return $url;
+        // Setup options
+        $options['headers'] = $headers;
+        if (is_array($params)) {
+            $options['body'] = json_encode($params);
+        }
+        
+        // Making Request
+        try
+        {
+            $response = $this->client->request($method, $url, $options);
+            return json_decode($response->getBody());
+        }
+        catch (RequestException $e)
+        {
+            throw new ZackSDKException($e->getMessage());
+        }
     }
 }
