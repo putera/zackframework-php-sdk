@@ -131,8 +131,10 @@ class Zackframework
             $data = json_decode($response->getBody());
 
             if (isset($data->error)) {
-                throw new ZackSDKException('E' . $data->error->code .' : '. $data->error->message);                
+                throw new ZackSDKException('E' . $data->error->code .' : '. $data->error->message);
             }
+
+            return $data;
         }
         catch (RequestException $e)
         {
